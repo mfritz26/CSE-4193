@@ -1,0 +1,41 @@
+Largest Palindrome Project
+
+A palindromic number reads the same both ways. The largest palindrome made from the product of two 2-digit numbers is 9009 = 91 × 99.
+Find the largest palindrome made from the product of two 3-digit numbers.
+
+#python solution
+import math
+highestPalindrome = 0
+for x in range(100, 1000):
+	for y in range(100, 1000):
+	    result = x * y
+	    resultString = str(x * y) # string form to work with individual digits
+	    isPalindrome = True # assume until proven false
+	    for i in range(0, math.floor(len(resultString)/2)):
+	        if resultString[i] != resultString[math.floor(len(resultString)) - 1 - i]:
+	            isPalindrome = False
+	    if isPalindrome and (result > highestPalindrome):
+	        highestPalindrome = result
+print(highestPalindrome)
+
+//java solution
+int highestPalindrome = 0;
+for (int x = 100; x < 1000; x++) {
+    for (int y = 100; y < 1000; y++) {
+        int result = x * y;
+        //string form to work with individual digits
+        String resultString = Integer.toString(result);
+        boolean isPalindrome = true; //assume until proven false
+        for (int i = 0; i < (resultString.length() / 2); i++) {
+            if (resultString.charAt(i) != resultString
+                    .charAt(resultString.length() - 1 - i)) {
+                isPalindrome = false;
+            }
+        }
+        if (isPalindrome && result > highestPalindrome) {
+            highestPalindrome = result;
+        }
+    }
+}
+System.out.print(highestPalindrome);
+}
