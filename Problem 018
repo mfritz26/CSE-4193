@@ -1,0 +1,160 @@
+Maximum Path Sum I
+
+By starting at the top of the triangle below and moving to adjacent numbers on the row below, the maximum total from top to bottom is 23.
+
+   3
+  7 4
+ 2 4 6
+8 5 9 3
+
+That is, 3 + 7 + 4 + 9 = 23.
+
+Find the maximum total from top to bottom of the triangle below:
+
+              75
+             95 64
+            17 47 82
+           18 35 87 10
+          20 04 82 47 65
+         19 01 23 75 03 34
+        88 02 77 73 07 63 67
+       99 65 04 28 06 16 70 92
+      41 41 26 56 83 40 80 70 33
+     41 48 72 33 47 32 37 16 94 29
+    53 71 44 65 25 43 91 52 97 51 14
+   70 11 33 28 77 73 17 78 39 68 17 57
+  91 71 52 38 17 14 91 43 58 50 27 29 48
+ 63 66 04 68 89 53 67 30 73 16 69 87 40 31
+04 62 98 27 23 09 70 98 73 93 38 53 60 04 23
+
+NOTE: As there are only 16384 routes, it is possible to solve this problem by trying every route. However, Problem 67, is the same challenge with a triangle containing one-hundred rows; it cannot be solved by brute force, and requires a clever method!
+
+# python solution
+array = [[75],
+        [95,64],
+        [17,47,82],
+        [18,35,87,10],
+        [20,4,82,47,65],
+        [19,1,23,75,3,34],
+        [88,2,77,73,7,63,67],
+        [99,65,4,28,6,16,70,92],
+        [41,41,26,56,83,40,80,70,33],
+        [41,48,72,33,47,32,37,16,94,29],
+        [53,71,44,65,25,43,91,52,97,51,14],
+        [70,11,33,28,77,73,17,78,39,68,17,57],
+        [91,71,52,38,17,14,91,43,58,50,27,29,48],
+        [63,66,4,68,89,53,67,30,73,16,69,87,40,31],
+        [4,62,98,27,23,9,70,98,73,93,38,53,60,4,23]]
+
+# create empty array for sums
+# create empty array for paths
+sums = []
+paths = []
+for a in array:
+    sums = [[] for i in a]
+    paths = [None for i in a]
+for b in range(0, array.__len__()):
+    sums[b] = [0 for c in range(b + 1)]
+    paths[b] = [[] for c in range(b + 1)]
+sums[0][0] = array[0][0]
+paths[0][0] = [array[0][0]]
+
+# enter cumulative max sums into sums array
+# enter cumulative max paths into paths array
+for i in range(1, array.__len__()):
+    for j in range(0, i + 1):
+        if j == 0:
+            sums[i][j] = array[i][j] + sums[i - 1][0]
+            paths[i][j] = paths[i - 1][j][:]
+            paths[i][j].append(array[i][j])
+        elif j == i:
+            sums[i][j] = array[i][j] + sums[i - 1][i - 1]
+            paths[i][j] = paths[i - 1][j - 1][:]
+            paths[i][j].append(array[i][j])
+        else:
+            # determine highest cumulative parent sum
+            sums[i][j] = array[i][j] + max(sums[i - 1][j - 1], sums[i - 1][j])
+            # determine index of highest sum to use as index of highest list
+            maximum = paths[i - 1][sums[i - 1].index(max(sums[i - 1][j], sums[i - 1][j - 1]))][:]
+            paths[i][j] = maximum[:]
+            paths[i][j].append(array[i][j])
+# determine result from bottom row
+bottom_row = array.__len__() - 1
+highest_sum = max(sums[bottom_row])
+# print highest path
+print(paths[bottom_row][sums[bottom_row].index(highest_sum)])
+# print highest sum
+print(highest_sum)
+
+
+
+//java solution
+int[][] array = { { 75 }, { 95, 64 }, { 17, 47, 82 },
+        { 18, 35, 87, 10 }, { 20, 4, 82, 47, 65 },
+        { 19, 1, 23, 75, 3, 34 }, { 88, 2, 77, 73, 7, 63, 67 },
+        { 99, 65, 4, 28, 6, 16, 70, 92 },
+        { 41, 41, 26, 56, 83, 40, 80, 70, 33 },
+        { 41, 48, 72, 33, 47, 32, 37, 16, 94, 29 },
+        { 53, 71, 44, 65, 25, 43, 91, 52, 97, 51, 14 },
+        { 70, 11, 33, 28, 77, 73, 17, 78, 39, 68, 17, 57 },
+        { 91, 71, 52, 38, 17, 14, 91, 43, 58, 50, 27, 29, 48 },
+        { 63, 66, 4, 68, 89, 53, 67, 30, 73, 16, 69, 87, 40, 31 },
+        { 4, 62, 98, 27, 23, 9, 70, 98, 73, 93, 38, 53, 60, 4, 23 } };
+
+//create empty array for sums
+//create empty array for paths
+int[][] sums = new int[array.length][];
+List<Integer>[][] paths = new List[array.length][];
+for (int i = 0; i < array.length; i++) {
+    paths[i] = new List[i + 1];
+}
+for (int i = 0; i < array.length; i++) {
+    for (int j = 0; j < i + 1; j++) {
+        paths[i][j] = new ArrayList<Integer>();
+    }
+}
+for (int a = 0; a < array.length; a++) {
+    sums[a] = new int[a + 1];
+}
+paths[0][0].add(array[0][0]);
+sums[0][0] = array[0][0];
+
+//enter cumulative max sums into sums array
+//enter corresponding paths into paths array
+for (int i = 1; i < array.length; i++) {
+    for (int j = 0; j < i + 1; j++) {
+        if (j == 0) {
+            sums[i][j] = array[i][j] + sums[i - 1][0];
+            paths[i][j].addAll(paths[i - 1][j]);
+            paths[i][j].add(array[i][j]);
+        } else if (j == i) {
+            sums[i][j] = array[i][j] + sums[i - 1][i - 1];
+            paths[i][j].addAll(paths[i - 1][j - 1]);
+            paths[i][j].add(array[i][j]);
+        } else {
+            //determine highest cumulative parent sum
+            sums[i][j] = array[i][j]
+                    + Math.max(sums[i - 1][j - 1], sums[i - 1][j]);
+            if (sums[i - 1][j - 1] > sums[i - 1][j]) {
+                paths[i][j].addAll(paths[i - 1][j - 1]);
+            } else {
+                paths[i][j].addAll(paths[i - 1][j]);
+            }
+            paths[i][j].add(array[i][j]);
+        }
+    }
+}
+//determine result from bottom row
+int bottomRow = array.length - 1;
+int highestSum = sums[bottomRow][0];
+List<Integer> highestPath = paths[bottomRow][0];
+for (int k = 1; k < sums[bottomRow].length; k++) {
+    if (sums[bottomRow][k] > highestSum) {
+        highestSum = sums[bottomRow][k];
+        highestPath = paths[bottomRow][k];
+    }
+}
+//print highest path
+System.out.println(highestPath);
+//print highest sum
+System.out.println(highestSum);
